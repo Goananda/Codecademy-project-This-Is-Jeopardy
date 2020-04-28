@@ -8,14 +8,14 @@ def find_words(database, column, word_list, sensitive=False, separated=False):
   if_sens = lambda x: x if sensitive == True else x.lower()
   if_sep = lambda x: "\\b"+x+"\\b" if separated == True else x
   filter = lambda x: all(re.search(if_sep(if_sens(word)), if_sens(x)) for word in word_list)
-  return database.loc[database[column].apply(filter)]
+  return database[database[column].apply(filter)]
 
 def count_words(database, column):
   return database[column].value_counts()
 
 def decade_proportion(database, column, word_list, date, sensitive=False, separated=False):
   decade_database = database[database.air_date.str[0:3] == date]
-  return str(round(100*len(find_words(decade_database, column, word_list, separated=True))/len(decade_database), 2))+"%"
+  return str(round(100*len(find_words(decade_database, column, word_list, sensitive, separated))/len(decade_database), 2))+"%"
 
 def category_propotions(database, categories):
   j_round_counts = database.groupby('j_round')['show_number'].count().reset_index()
@@ -38,13 +38,13 @@ jeopardy['float_value'] = pd.to_numeric(jeopardy.value.apply(lambda x: re.sub("[
 
 result_1 = find_words(jeopardy, 'question', ["King", "England"], separated=True)
 result_2 = find_words(jeopardy, 'question', ["King"], separated=True)
-print(f'Average value of questions that contain the word "King": ${round(result_2.float_value.mean(), 2)}')
-print(f'\nUnique answers to the questions containing the word "King":\n{count_words(result_2, "answer")}')
+print(f'Average value of questions containing word "King": ${round(result_2.float_value.mean(), 2)}')
+print(f'\nUnique answers to questions containing word "King":\n{count_words(result_2, "answer")}')
 
 jeopardy_90s_computer = decade_proportion(jeopardy, 'question', ['Computer'], "199", separated=True)
 jeopardy_00s_computer = decade_proportion(jeopardy, 'question', ['Computer'], "200", separated=True)
-print(f'\nProportion of questions with word "Computer" in 90s: {jeopardy_90s_computer}')
-print(f'Proportion of questions with word "Computer" in 00s: {jeopardy_00s_computer}')
+print(f'\nProportion of questions containing word "Computer" in 90s: {jeopardy_90s_computer}')
+print(f'Proportion of questions containing word "Computer" in 00s: {jeopardy_00s_computer}')
 
 print("\nProportion of categories in rounds:")
 print(category_propotions(jeopardy, ['literature', 'science']))

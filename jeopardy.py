@@ -52,7 +52,7 @@ print(category_propotions(jeopardy, ['literature', 'science']))
 answer = None
 print("\nQuiz yourself. Enter 'q' to exit")
 while True:
-  number = random.randint(0, len(jeopardy) - 1)
+  number = random.randrange(len(jeopardy))
   print(jeopardy.question[number])
   answer = input()
   if answer.lower() == "q":

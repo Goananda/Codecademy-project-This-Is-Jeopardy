@@ -33,7 +33,7 @@ def category_propotions(database, categories):
 jeopardy = pd.read_csv('jeopardy.csv')
 jeopardy.columns = ['show_number', 'air_date', 'j_round', 'category', 'value', 'question', 'answer']
 jeopardy['category'] = jeopardy.category.str.lower()
-jeopardy['float_value'] = pd.to_numeric(jeopardy.value.apply(lambda x: re.sub("[^\d]", "", x)\
+jeopardy['float_value'] = pd.to_numeric(jeopardy.value.apply(lambda x: re.sub("[\D]", "", x)\
                                                              if x != "None" else 0))
 
 result_1 = find_words(jeopardy, 'question', ["King", "England"], separated=True)

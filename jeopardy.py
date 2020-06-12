@@ -12,6 +12,7 @@ jeopardy.columns = ["show_number", "air_date", "jround", "category", "value", "q
 jeopardy.fillna({"answer": "Null"}, inplace=True)
 to_float = lambda x: float(re.sub("[\D]", "", x)) if x != "None" else 0
 jeopardy["value"] = jeopardy.value.apply(to_float)
+jeopardy["question_answer"] = jeopardy["question"] + " " + jeopardy["answer"]
 
 def jeopardy_analytics():
     print("Welcome to Jeopardy Analytics!")
@@ -65,10 +66,10 @@ def set_categories():
             break
 
 def categories_statistics():
-    print("\nCategory frequency in rounds:\n")
+    print("\nCategory frequency in rounds:")
     frequency(jeopardy, "category", categories, "jround")
     for category in categories:
-        print(f"\nCategory: {category}")
+        print(f"{category}: ", end="")
         avg_value(jeopardy[jeopardy.category == category])
 
 def find_data():
@@ -127,9 +128,6 @@ def avg_value(df):
     print(f"Average value of questions: ${'{:.2f}'.format(df.value.mean())}")
 
 def get_data_by_words(df, only_questions=False):
-    df = df.copy()
-    if only_questions == False:
-        df["question_answer"] = df["question"] + " " + df["answer"]
     col_dict = {"Question": "question", "Answer": "answer", "Question & Answer": "question_answer"}
     items = []
     title = []
@@ -139,10 +137,7 @@ def get_data_by_words(df, only_questions=False):
             choice = choose_menu(menu_list, "\n".join(title))
             if choice == "Find data":
                 fil = lambda row: all(re.search(word, row[column]) for (word, column) in items)
-                df = df[df.apply(fil, axis=1)]
-                if "question_answer" in df.columns:
-                    del df["question_answer"]
-                return df
+                return df[df.apply(fil, axis=1)]
         word = input("Word: ")
         if word != "":
             word_title = f'"{word}"'
@@ -180,6 +175,8 @@ def data_to_csv(df):
         path = f"jeo_data{i}.csv"
     choice = choose_menu(["NO", "YES"], f'Write data to "{path}?"')
     if choice == "YES":
+        if "question_answer" in df.columns:
+            del df["question_answer"]
         df.to_csv(path)
 
 def choose_menu(lst, title):

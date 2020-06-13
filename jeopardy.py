@@ -9,6 +9,7 @@ pd.set_option("display.max_rows", None)
 
 jeopardy = pd.read_csv("jeopardy.csv")
 jeopardy.columns = ["show_number", "air_date", "jround", "category", "value", "question", "answer"]
+jeopardy['question'] = jeopardy.question.apply(lambda x: re.sub(r"<[^<>]*>", "", x))
 jeopardy.fillna({"answer": "Null"}, inplace=True)
 to_float = lambda x: float(re.sub("[\D]", "", x)) if x != "None" else 0
 jeopardy["value"] = jeopardy.value.apply(to_float)
@@ -90,7 +91,7 @@ def find_unique_answers():
     print(f"\n{length} unique answers are found")
     if length > 0:
         print("Most popular answers:")
-        print(result[:10].to_string(index=False))
+        print(result.head(10).to_string(index=False))
         data_to_csv(result)
 
 def play_game():

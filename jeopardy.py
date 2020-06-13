@@ -9,10 +9,9 @@ pd.set_option("display.max_rows", None)
 
 jeopardy = pd.read_csv("jeopardy.csv")
 jeopardy.columns = ["show_number", "air_date", "jround", "category", "value", "question", "answer"]
-jeopardy['question'] = jeopardy.question.apply(lambda x: re.sub(r"<[^<>]*>", "", x))
-jeopardy.fillna({"answer": "Null"}, inplace=True)
-to_float = lambda x: float(re.sub("[\D]", "", x)) if x != "None" else 0
-jeopardy["value"] = jeopardy.value.apply(to_float)
+jeopardy["question"] = jeopardy.question.str.replace("<[^<>]*>", "")
+jeopardy["value"] = pd.to_numeric(jeopardy.value.str.replace("[\D]", ""))
+jeopardy.fillna({"answer": "Null", "value": 0}, inplace=True)
 jeopardy["question_answer"] = jeopardy["question"] + " " + jeopardy["answer"]
 
 def jeopardy_analytics():

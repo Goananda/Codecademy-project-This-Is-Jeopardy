@@ -184,8 +184,7 @@ def choose_menu(lst, title):
     for item in enumerate(lst):
         print(f"{item[0]} - {item[1]}")
     while True:
-        choice = input("Number of your choice: ")
-        if choice in map(str, range(len(lst))):
+        if (choice := input("Number of your choice: ")) in map(str, range(len(lst))):
             return lst[int(choice)]
 
 categories = []
